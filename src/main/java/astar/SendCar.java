@@ -16,4 +16,8 @@ public class SendCar {
 		this.currentFloor = from;
 		this.goalFloor = to;
 	}
+	
+	public String print() {
+		return "send Elevator "+this.elevatorNum+" from "+this.currentFloor+" to "+this.goalFloor;
+	}
 }

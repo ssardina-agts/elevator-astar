@@ -1,9 +1,5 @@
 package astar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import astar.Request;
 import astar.SendCar;
 
 /*
@@ -20,11 +16,13 @@ public class Node {
 	int hCost;
 	int gCost;
 	int finalCost;
-	List<Request> leftRequests = new ArrayList<Request>();
 	SendCar order;
 	Node parent;
 	
-	public Node(List<Request> requests) {
-		this.leftRequests = requests;
+	Node() {
+	}
+	
+	public String print() {
+		return this.order.print();
 	}
 }

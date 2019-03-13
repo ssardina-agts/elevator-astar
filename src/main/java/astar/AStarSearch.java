@@ -33,10 +33,11 @@ public class AStarSearch {
 		}
 	}
 	
-	public static void Search(List<Elevator> elevators, List<Request> requests) {
+	public static void Search(int numElevators, List<Request> requests) {
 		// problem representation as grid!
-		Node[][] grid = new Node[requests.size()][elevators.size()];
-		Node firstNode = new Node(requests);
+		Node[][] grid = new Node[numElevators][requests.size()];
+		Node firstNode = new Node();
+		
 		Node current;
 
 		open.add(firstNode);
@@ -50,7 +51,7 @@ public class AStarSearch {
 			
 			int temp = -1;
 			// for every elevator
-			for(int i=0; i<elevators.size(); i++) {
+			for(int i=0; i<numElevators; i++) {
 				if(elevators[i].dir == "none" || elevators[i].dir == request.dir) {
 					//temporally assign request to elevator
 					temp = i;

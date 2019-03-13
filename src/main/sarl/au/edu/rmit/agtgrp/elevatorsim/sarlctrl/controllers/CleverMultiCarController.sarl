@@ -21,6 +21,8 @@ import au.edu.rmit.agtgrp.elevatorsim.sarlmw.events.ModelChangePercept
 import au.edu.rmit.agtgrp.elevatorsim.sarlmw.events.SendCarAction
 import au.edu.rmit.agtgrp.elevatorsim.sarlmw.events.CarRequestPercept
 import au.edu.rmit.agtgrp.elevatorsim.sarlmw.events.FloorRequestPercept
+import au.edu.rmit.agtgrp.elevatorsim.sarlmw.events.PersonEnteredPercept
+import au.edu.rmit.agtgrp.elevatorsim.sarlmw.events.PersonExitedPercept
 
 import java.util.PriorityQueue
 import java.util.Comparator
@@ -53,7 +55,8 @@ agent CleverMultiCarController {
 
 	var currentFloor : int = 1 // current floor the car is in
 	var moving : boolean = false // the car is currently moving
-	val maxCapacity : int = 0
+	val maxCapacity : int = 5
+	var currentCapacity : int
 	
 	var queue : PriorityQueue<Integer> = new PriorityQueue
 
@@ -120,6 +123,14 @@ agent CleverMultiCarController {
 		reportArrivedAt(occurrence.car, occurrence.floor)
 		currentFloor = occurrence.floor
 		moving = false
+	}
+
+	on PersonEnteredPercept {
+		currentCapacity += 1
+	}
+
+	on PersonExitedPercept {
+		currentCapacity -= 1
 	}
 
 
