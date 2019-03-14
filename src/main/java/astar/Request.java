@@ -6,8 +6,8 @@ package astar;
  * dir: the intended directoin of travel
  */
 public class Request {
-	private int floor;
-	private String dir;
+	int floor;
+	String dir;
 	
 	public Request(int requestedFloor, String direction) {
 		this.floor = requestedFloor;

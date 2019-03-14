@@ -8,29 +8,24 @@ package astar;
  * currentCapacity: current number of travelers inside car
  */
 public class Elevator {
-	private String dir;
-	private int floor;
-	private int maxCapacity = 5;
-	private int currentCapacity;
+	String dir;
+	int number;
+	int floor;
+	int maxCapacity = 5;
+	int currentCapacity;
 	
 	public Elevator(int number, String direction) {
 		this.floor = number;
 		this.dir = direction;
 	}
 	
-	public int getFloor() {return this.floor;}
-	public void setFloor(int newFloor) {this.floor = newFloor;}
-	
-	public String getDir() {return this.dir;}
-	public void setDir(String newDir) {this.dir = newDir;}
-	
-	public int getCapacity() {return this.currentCapacity;}
 	public void changeCapacity(int numPerson) {
-		if(currentCapacity < maxCapacity && numPerson > 0) { 
+		if (numPerson > 0 && currentCapacity < maxCapacity) { 
 			this.currentCapacity += numPerson;
-			}
-		else {System.out.println("Max Capacity reached");}
-		
-		if(numPerson < 0) this.currentCapacity -= numPerson;
+		} else if (numPerson < 0 && currentCapacity > 0) {
+			this.currentCapacity -= numPerson;
+		} else if (numPerson < 0 && currentCapacity == 0) {
+			this.currentCapacity = 0;
+		}
 	}
 }

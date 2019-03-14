@@ -6,12 +6,12 @@ package astar;
  * currentFloor: current position of that elevator
  * goalFloor: goal of the elevator/ origin of the call
  */
-public class SendCar {
+public class SendingOrder {
 	int elevatorNum;
 	int currentFloor;
 	int goalFloor;
 	
-	public SendCar(int num, int from, int to) {
+	public SendingOrder (int num, int from, int to) {
 		this.elevatorNum = num;
 		this.currentFloor = from;
 		this.goalFloor = to;
