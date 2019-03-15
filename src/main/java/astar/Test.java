@@ -3,10 +3,12 @@ package astar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Iterator;
 
-import astar.*;
-import astar.AStar.Elevator;
-import astar.AStar.Request;
+import astar.Elevator;
+import astar.Request;
+import astar.AStarSearch;
+
 
 public class Test {
 	// change for the test
@@ -53,8 +55,15 @@ public class Test {
 		List<Request> allRequests = createRequests(numRequests, numFloors);
 		
 		AStarSearch test = new AStarSearch();
-		test.Search(allElevators, allRequests);
-		testPath = test.makePath(lastNode);
+		Node lastNode = test.Search(allRequests, allElevators);
+		List<Node> path = test.makePath(lastNode);
+		
+		Iterator<Node> itr = path.iterator();
+		while (itr.hasNext()) {
+			Node element = itr.next();
+			System.out.println(element.toString());
+		}
+		
 
 	}
 

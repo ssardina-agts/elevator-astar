@@ -24,15 +24,13 @@ public class AStarSearch {
 	// maybe implement as boolean[][]
 	static List<Node> closed = new ArrayList<Node>();
 	
-	static void checkAndUpdate(Node current, Node next, int cost) {
+	static void nodeUpdate(Node current, Node next) {
 		if (next == null || closed.contains(next)) return;
-		int final_cost = next.hCost+cost;
-		
+
 		boolean inOpen = open.contains(next);
-		if (!inOpen || final_cost < next.finalCost) {
-			next.finalCost = final_cost;
+		if (!inOpen) {
 			next.parent = current;
-			if (!inOpen) open.add(next);
+			open.add(next);
 		}
 	}
 	
@@ -47,6 +45,7 @@ public class AStarSearch {
 			return 0;
 		});
 		
+		// finding the closest elevator to request
 		if (request.floor < elevators.get(0).floor) {
 			return elevators.get(0);
 		}
@@ -72,7 +71,7 @@ public class AStarSearch {
 		return (elevators.get(low).floor - request.floor) < (request.floor - elevators.get(high).floor) ? elevators.get(low) : elevators.get(high);
 	}
 	
-	// calculates the final costs for request/elevator
+	// calculates the heuristic costs for request/elevator
 	static int calcH(Request request, List<Elevator> elevators) {
 		int cost = 0;
 		int floor = request.floor;
@@ -83,54 +82,74 @@ public class AStarSearch {
 		return cost;
 	}
 	
-	// creates the first node for the search algorithm
-	static Node createFirstNode(Request request, Elevator current) {
-		Node noParent = null;
+	// creates the first node for the search algorithm with the first array of accumulated g-costs and without parent
+	static Node createFirstNode(List<Elevator> elevators, Request request) {
+		Node temp = new Node();
+		temp.accGCost = new int[elevators.size()];
+		Node firstNode = new Node();
 		
-		Node firstNode = new Node(noParent, request, Elevator current, int gCost, int hCost);
+		// for every elevator; find best 
+		Iterator<Elevator> itr = elevators.iterator();
+		while(itr.hasNext()) {
+			Elevator currentElevator = itr.next();
+			if ((currentElevator.dir == "none" || currentElevator.dir == request.dir) && currentElevator.currentCapacity < currentElevator.maxCapacity) {
+				int hCost = calcH(request, elevators);
+				temp = new Node(temp, request, currentElevator, hCost);
+				temp.parent = null;
+				
+				if (temp.finalCost < firstNode.finalCost) {
+					firstNode = temp;
+				}
+			}
+		}
+		
 		return firstNode;
 	}
 	
-	public static void Search(int numElevators, List<Request> allRequests, List<Elevator> elevators) {
-		// problem representation as grid!
-		Node[][] grid = new Node[numElevators][allRequests.size()];
-		//Node firstNode = new Node()
+	public Node Search(List<Request> allRequests, List<Elevator> allElevators) {
+		//problem representation as grid
+		Node[][] grid = new Node[allElevators.size()][allRequests.size()];
 		Request currentRequest;
 		Node currentNode;
-		int[] cumGCost = new int[elevators.size()];
+		
+		// creates first node
+		Node firstNode = createFirstNode(allElevators, allRequests.get(1));
+		allRequests.remove(1);
 
 		open.add(firstNode);
+		currentNode = open.poll();
 		
-		while(!allRequests.isEmpty()) {
-			currentNode = open.poll();
-			currentRequest = allRequests.get(1);
-			
+		while(!allRequests.isEmpty()) {	
 			if (currentNode == null) break;
+			
+			// change the position of the elevator from the current node's sending order
+			allElevators.get(currentNode.order.elevatorNum).floor = currentNode.order.goalFloor;
+			currentRequest = allRequests.get(1);
 			
 			closed.add(currentNode);
 			
 			Node temp;
 			
-			// for every elevator
-			Iterator<Elevator> itr = elevators.iterator();
+			// check for every possible elevator
+			Iterator<Elevator> itr = allElevators.iterator();
 
 			while(itr.hasNext()) {
 				Elevator currentElevator = itr.next();
 				if ((currentElevator.dir == "none" || currentElevator.dir == currentRequest.dir) && currentElevator.currentCapacity < currentElevator.maxCapacity) {
-					//mistake here? maybe add cost to parent cost instead?
-					cumGCost[currentElevator.floor] += Math.abs(currentRequest.floor-currentElevator.floor);
-					int hCost = calcH(currentRequest, elevators);
-					temp = new Node(currentNode, currentRequest, currentElevator, cumGCost[currentElevator.floor], hCost);
-					temp = grid[currentElevator.floor][currentRequest.floor];
-					checkAndUpdate(currentNode, temp, cumGCost[currentElevator.floor]);
+
+					int hCost = calcH(currentRequest, allElevators);
+					temp = new Node(currentNode, currentRequest, currentElevator, hCost);
+					grid[currentElevator.number][currentRequest.floor] = temp;
+					nodeUpdate(currentNode, temp);
 				}
 			}
 			allRequests.remove(1);
+			currentNode = open.poll();
 		}
-					
+		return currentNode;			
 	}
 	
-	public static List<Node> makePath(Node lastNode) {
+	public List<Node> makePath(Node lastNode) {
 		List<Node> path = new ArrayList<Node>();
 		
 		if (lastNode.parent == null) {

@@ -14,21 +14,26 @@ import astar.SendingOrder;
 public class Node implements Comparable<Node>{
 
 	int hCost;
-	int gCost;
+	// keeping track of the accumulated g-costs for all elevators so far
+	int[] accGCost;
 	int finalCost;
 	SendingOrder order;
 	Node parent;
 	
-	Node(Node parent, Request request, Elevator current, int gCost, int hCost) {
-		this.gCost = gCost;
+	public Node() {}
+	
+	public Node(Node parent, Request request, Elevator current, int hCost) {
 		this.hCost = hCost;
-		this.finalCost = this.gCost + this.hCost;
+		this.accGCost = parent.accGCost;
+		this.accGCost[current.number] += Math.abs(current.floor - request.floor);
+		this.finalCost = this.accGCost[current.number] + this.hCost;
 		this.order = new SendingOrder(current.number, current.floor, request.floor);
 		this.parent = parent;
 	}
 	
-	public String print() {
-		return this.order.print();
+	@Override
+	public String toString() {
+		return this.order.toString();
 	}
 	
 	@Override
