@@ -1,6 +1,5 @@
 package astar;
 import java.util.PriorityQueue;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
@@ -88,7 +87,7 @@ public class AStar {
 	/*
 	 * Request class containing information about
 	 * floor: the origin of the call
-	 * dir: the intended directoin of travel
+	 * dir: the intended direction of travel
 	 */
 	static class Request {
 		private int floor;

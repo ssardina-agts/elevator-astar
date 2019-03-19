@@ -19,6 +19,6 @@ public class SendingOrder {
 	
 	@Override
 	public String toString() {
-		return "send Elevator "+this.elevatorNum+" from "+this.currentFloor+" to "+this.goalFloor;
+		return "(#" + this.elevatorNum + ", from " + this.currentFloor + ", to " + this.goalFloor + ")";
 	}
 }
