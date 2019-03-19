@@ -1,4 +1,6 @@
 package astar;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.*;
 
 /*
@@ -11,7 +13,9 @@ import java.util.stream.*;
  */
 public class SearchNode implements Comparable<SearchNode> {
 
-	StateNode state;
+	List<Elevator> allElevators;
+	List<Request> allRequests;
+	
 	SearchNode parent;
 	SendingOrder order;
 	
@@ -20,26 +24,54 @@ public class SearchNode implements Comparable<SearchNode> {
 	int[] accGCost;
 	int finalCost;
 	
-	public SearchNode() {}
+	public SearchNode(List<Elevator> allElevators, List<Request> allRequests) {
+		this.allElevators = allElevators;
+		this.allRequests = allRequests;
+		this.hCost = calcH(allElevators, allRequests);
+	}
 	
-	public SearchNode(SearchNode parent, Elevator currentElevator, Request currentRequest, int hCost) {
+	public SearchNode(SearchNode parent, Elevator currentElevator, Request currentRequest) {
 		// inheriting values from parent search node
-		this.state = new StateNode(parent.state.allElevators, parent.state.allRequests);
+		this.allRequests = new ArrayList<Request>(parent.allRequests);
+		this.allElevators = new ArrayList<Elevator>(parent.allElevators);
 		this.parent = parent;
+		
 		this.order = new SendingOrder(currentElevator.number, currentElevator.floor, currentRequest.floor);
 		
 		this.accGCost = parent.accGCost;
-		this.hCost = hCost;
+		this.hCost = calcH(this.allElevators, this.allRequests);
 
 		// now updating the values
-		this.state.allRequests.remove(currentRequest);
+		this.allRequests.remove(currentRequest);
 		this.accGCost[currentElevator.number-1] += Math.abs(currentElevator.floor - currentRequest.floor);
 		
 		this.finalCost = IntStream.of(accGCost).sum() + hCost;
 	}
 	
-	static void updateState() {
+	// calculates the heuristic costs for request/elevator
+	static int calcH(List<Elevator> allElevators, List<Request> allRequests) {
+		int hCost = 0;
+
+		List<Integer> elevatorFloors = new ArrayList<Integer>();
+		for(Elevator e : allElevators) {
+			elevatorFloors.add(e.floor);
+		}
 		
+		List<Integer> requestFloors = new ArrayList<Integer>();
+		for (Request r : allRequests) {
+			requestFloors.add(r.floor);
+		}
+		
+		for (Integer r : requestFloors) {
+			int diff = 1000000;
+			for (Integer e : elevatorFloors) {
+				if (Math.abs(r-e) < diff) {
+					diff = Math.abs(r-e);
+				}
+			}
+			hCost += diff;
+		}
+		return hCost;
 	}
 	
 	public String print() {

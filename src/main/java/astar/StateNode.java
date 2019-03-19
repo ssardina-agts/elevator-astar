@@ -14,8 +14,6 @@ public class StateNode {
 	List<Elevator> allElevators;
 	List<Request> allRequests;
 	
-	public StateNode() {}
-	
 	public StateNode(List<Elevator> allElevators, List<Request> allRequests) {
 		this.allElevators = allElevators;
 		this.allRequests = allRequests;

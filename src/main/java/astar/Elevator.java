@@ -28,4 +28,8 @@ public class Elevator {
 			this.currentCapacity = 0;
 		}
 	}
+	
+	public String print() {
+		return "Elevator" + Integer.toString(number) + "@" + Integer.toString(floor);
+	}
 }

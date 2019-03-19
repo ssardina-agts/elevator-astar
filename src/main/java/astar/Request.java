@@ -3,7 +3,7 @@ package astar;
 /*
  * Request class containing information about
  * floor: the origin of the call
- * dir: the intended directoin of travel
+ * dir: the intended direction of travel
  */
 public class Request {
 	int floor;
@@ -12,5 +12,9 @@ public class Request {
 	public Request(int requestedFloor, String direction) {
 		this.floor = requestedFloor;
 		this.dir = direction;
+	}
+	
+	public String print() {
+		return Integer.toString(floor) + dir;
 	}
 }

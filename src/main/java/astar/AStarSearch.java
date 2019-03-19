@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import astar.Elevator;
-import astar.StateNode;
-import astar.Request;
+//import astar.Elevator;
+//import astar.SearchNode;
+//import astar.Request;
 
 
 /*
@@ -26,6 +26,7 @@ public class AStarSearch {
 			open.add(next);
 		}
 	}
+	
 	
 	// picks the closest elevator to the request-floor
 	static Elevator closestElevator(Request request, List<Elevator> elevators) {
@@ -64,71 +65,57 @@ public class AStarSearch {
 		return (elevators.get(low).floor - request.floor) < (request.floor - elevators.get(high).floor) ? elevators.get(low) : elevators.get(high);
 	}
 	
-	// calculates the heuristic costs for request/elevator
-	static int calcH(List<Elevator> allElevators, List<Request> allRequests) {
-		int hCost = 0;
-
-		List<Integer> elevatorFloors = new ArrayList<Integer>();
-		for(Elevator e : allElevators) {
-			elevatorFloors.add(e.floor);
-		}
-		
-		List<Integer> requestFloors = new ArrayList<Integer>();
-		for (Request r : allRequests) {
-			requestFloors.add(r.floor);
-		}
-		
-		for (Integer r : requestFloors) {
-			int diff = 1000000;
-			for (Integer e : elevatorFloors) {
-				if (Math.abs(r-e) < diff) {
-					diff = Math.abs(r-e);
-				}
-			}
-			hCost += diff;
-		}
-		return hCost;
-	}
 	
 	// creates the first node for the search algorithm with the first array of accumulated g-costs and without parent
 	static SearchNode createFirstNode(List<Elevator> allElevators, List<Request> allRequests) {
 		
-		SearchNode firstNode = new SearchNode();
+		SearchNode firstNode = new SearchNode(allElevators, allRequests);
 		firstNode.accGCost = new int[allElevators.size()];
-		firstNode.state = new StateNode(allElevators, allRequests);
-		firstNode.hCost = calcH(allElevators, allRequests);
 		firstNode.finalCost = firstNode.hCost;
 		
 		return firstNode;
 	}
 	
+	
 	static PriorityQueue<SearchNode> open = new PriorityQueue<SearchNode>();
 	static List<SearchNode> closed = new ArrayList<SearchNode>();
+	
 	
 	public SearchNode Search(List<Elevator> allElevators, List<Request> allRequests) {
 		
 		// creates first node
 		SearchNode firstNode = createFirstNode(allElevators, allRequests);
-		System.err.println(firstNode.print());
 		open.add(firstNode);
 		
 		SearchNode currentNode;
 	
 		while(true) {
 			currentNode = open.poll();
-			if (currentNode.state.allRequests.isEmpty()) break;
+			if (currentNode.allRequests.isEmpty()) break;
 			
 			closed.add(currentNode);
 			
 			SearchNode temp;
 			
-			for (Request currentRequest : currentNode.state.allRequests) {
-				for (Elevator currentElevator : currentNode.state.allElevators) {
-						int hCost = calcH(currentNode.state.allElevators, currentNode.state.allRequests); //calculate hCost here
-						temp = new SearchNode(currentNode, currentElevator, currentRequest, hCost);
-						openUpdate(currentNode, temp);
+			Iterator<Request> itrR = currentNode.allRequests.iterator();
+			Iterator<Elevator> itrE = currentNode.allElevators.iterator();
+			
+			while (itrR.hasNext()) {
+				Request currentRequest = itrR.next();
+				while (itrE.hasNext()) {
+					Elevator currentElevator = itrE.next();
+					temp = new SearchNode(currentNode, currentElevator, currentRequest);
+					openUpdate(currentNode, temp);
 				}
 			}
+			
+//			for (Request currentRequest : currentNode.state.allRequests) {
+//				System.err.println(currentRequest.print());
+//				for (Elevator currentElevator : currentNode.state.allElevators) {
+//						temp = new SearchNode(currentNode, currentElevator, currentRequest);
+//						openUpdate(currentNode, temp);
+//				}
+//			}
 		}
 		return currentNode;
 	
