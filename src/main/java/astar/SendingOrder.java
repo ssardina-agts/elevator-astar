@@ -17,8 +17,7 @@ public class SendingOrder {
 		this.goalFloor = to;
 	}
 	
-	@Override
-	public String toString() {
+	public String print() {
 		return "(#" + this.elevatorNum + ", from " + this.currentFloor + ", to " + this.goalFloor + ")";
 	}
 }

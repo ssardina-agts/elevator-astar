@@ -1,13 +1,10 @@
 package astar;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+//import java.util.Iterator;
 import java.util.PriorityQueue;
 
-//import astar.Elevator;
-//import astar.SearchNode;
-//import astar.Request;
 
 
 /*
@@ -94,42 +91,29 @@ public class AStarSearch {
 			if (currentNode.allRequests.isEmpty()) break;
 			
 			closed.add(currentNode);
-			
 			SearchNode temp;
 			
-			Iterator<Request> itrR = currentNode.allRequests.iterator();
-			Iterator<Elevator> itrE = currentNode.allElevators.iterator();
-			
-			while (itrR.hasNext()) {
-				Request currentRequest = itrR.next();
-				while (itrE.hasNext()) {
-					Elevator currentElevator = itrE.next();
-					temp = new SearchNode(currentNode, currentElevator, currentRequest);
-					openUpdate(currentNode, temp);
+			for (Request currentRequest : currentNode.allRequests) {
+				for (Elevator currentElevator : currentNode.allElevators) {
+						temp = new SearchNode(currentNode, currentElevator, currentRequest);
+						openUpdate(currentNode, temp);
 				}
 			}
-			
-//			for (Request currentRequest : currentNode.state.allRequests) {
-//				System.err.println(currentRequest.print());
-//				for (Elevator currentElevator : currentNode.state.allElevators) {
-//						temp = new SearchNode(currentNode, currentElevator, currentRequest);
-//						openUpdate(currentNode, temp);
-//				}
-//			}
 		}
 		return currentNode;
-	
 	}
 	
 		
 	public List<SearchNode> makePath(SearchNode lastNode) {
 		List<SearchNode> path = new ArrayList<SearchNode>();
 		
-		if (lastNode.parent == null) {
-			return path;
-		} else {
+		while (lastNode.parent != null) {
+			System.out.println(lastNode.print());
 			path.add(lastNode);
-			return makePath(lastNode.parent);
+			lastNode = lastNode.parent;
 		}
+		return path;
 	}
+	
+	
 }

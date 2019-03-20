@@ -1,7 +1,6 @@
 package astar;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -85,28 +84,29 @@ public class Test {
 		// print information about pending requests and available elevators for our test case
 		System.out.println("###############################");
 		for (Request r : allRequests) {
-			System.out.print("Floor: " + r.floor + " Direction: " + r.dir + "\n");
+			System.out.println("Floor: " + r.floor + " Direction: " + r.dir);
 		}
 		System.out.println();
 		for (Elevator e : allElevators) {
-			System.out.print("Elevator #" + e.number + " in floor " + e.floor + " going: " + e.dir + "\n");
+			System.out.println("Elevator #" + e.number + " in floor " + e.floor);
 		}
 		System.out.println("###############################");
 		
 		// let A* run
 		AStarSearch testSearch = new AStarSearch();
+		System.out.println("Done with search.");
 		SearchNode lastNode = testSearch.Search(allElevators, allRequests);
+		//System.out.println("Last node: " + lastNode.print());
+		//System.out.println("Last node's parent: " + lastNode.parent.print());
+		
 		
 		// make and print path
-		List<SearchNode> path = testSearch.makePath(lastNode);	
-		for (SearchNode node : path) {
-			System.out.println(node.order.toString());
-		}
+		testSearch.makePath(lastNode);
+		System.out.println("Path done.");
 		
 		
 		
 		
 
 	}
-
 }

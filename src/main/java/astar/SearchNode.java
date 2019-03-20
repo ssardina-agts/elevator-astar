@@ -13,6 +13,7 @@ import java.util.stream.*;
  */
 public class SearchNode implements Comparable<SearchNode> {
 
+	// state of the search node
 	List<Elevator> allElevators;
 	List<Request> allRequests;
 	
@@ -20,7 +21,6 @@ public class SearchNode implements Comparable<SearchNode> {
 	SendingOrder order;
 	
 	int hCost;
-	// keeping track of the accumulated g-costs for all elevators so far
 	int[] accGCost;
 	int finalCost;
 	
@@ -38,13 +38,14 @@ public class SearchNode implements Comparable<SearchNode> {
 		
 		this.order = new SendingOrder(currentElevator.number, currentElevator.floor, currentRequest.floor);
 		
-		this.accGCost = parent.accGCost;
+		this.accGCost = parent.accGCost.clone();
 		this.hCost = calcH(this.allElevators, this.allRequests);
 
+		
 		// now updating the values
 		this.allRequests.remove(currentRequest);
 		this.accGCost[currentElevator.number-1] += Math.abs(currentElevator.floor - currentRequest.floor);
-		
+		this.allElevators.get(currentElevator.number-1).floor = currentRequest.floor;
 		this.finalCost = IntStream.of(accGCost).sum() + hCost;
 	}
 	
@@ -75,7 +76,20 @@ public class SearchNode implements Comparable<SearchNode> {
 	}
 	
 	public String print() {
-		return Integer.toString(finalCost);
+		return order.print() +" - finalCost: "+ Integer.toString(finalCost);
+	}
+	
+	public List<String> printState() {
+		List<String> state = new ArrayList<String>();
+		for (Request r : this.allRequests) {
+			state.add(r.print());
+		}
+		
+		for (Elevator e : this.allElevators) {
+			state.add(e.print());
+		}
+		
+		return state;
 	}
 	
 	@Override

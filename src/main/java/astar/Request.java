@@ -15,6 +15,6 @@ public class Request {
 	}
 	
 	public String print() {
-		return Integer.toString(floor) + dir;
+		return "Request@" + Integer.toString(floor) + " going " + dir;
 	}
 }
