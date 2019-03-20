@@ -17,7 +17,8 @@ public class SearchNode implements Comparable<SearchNode> {
 	List<Elevator> allElevators;
 	List<Request> allRequests;
 	
-	SearchNode parent;
+	SearchNode parent = null;
+	// sending order that created the current state/ search node
 	SendingOrder order;
 	
 	int hCost;
@@ -25,8 +26,8 @@ public class SearchNode implements Comparable<SearchNode> {
 	int finalCost;
 	
 	public SearchNode(List<Elevator> allElevators, List<Request> allRequests) {
-		this.allElevators = allElevators;
-		this.allRequests = allRequests;
+		this.allElevators = new ArrayList<Elevator>(allElevators);
+		this.allRequests = new ArrayList<Request>(allRequests);
 		this.hCost = calcH(allElevators, allRequests);
 	}
 	

@@ -18,7 +18,7 @@ public class Test {
 		
 		// create List with elevator information
 		for(int i = 0; i < numElevators; i++) {
-			int currentFloor = rnd.nextInt(numFloors);
+			int currentFloor = rnd.nextInt(numFloors)+1;
 			Elevator singleElevator = new Elevator(currentFloor, "none");
 			singleElevator.number = i+1;
 			allElevators.add(singleElevator);
@@ -35,7 +35,7 @@ public class Test {
 		
 		// create List with number of requests
 		for(int i = 0; i < numRequests; i++) {
-			int floor = rnd.nextInt(numFloors);
+			int floor = rnd.nextInt(numFloors)+1;
 			int rndDir = rnd.nextInt(2);
 			if(rndDir == 0) {dir = "UP";}
 			else {dir = "DOWN";}

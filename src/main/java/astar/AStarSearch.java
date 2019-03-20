@@ -21,6 +21,7 @@ public class AStarSearch {
 		if (!inOpen) {
 			next.parent = current;
 			open.add(next);
+			countOpen += 1;
 		}
 	}
 	
@@ -63,7 +64,7 @@ public class AStarSearch {
 	}
 	
 	
-	// creates the first node for the search algorithm with the first array of accumulated g-costs and without parent
+	// creates the first node for the search algorithm with the first array of accumulated g-costs, no order, no parent
 	static SearchNode createFirstNode(List<Elevator> allElevators, List<Request> allRequests) {
 		
 		SearchNode firstNode = new SearchNode(allElevators, allRequests);
@@ -76,17 +77,22 @@ public class AStarSearch {
 	
 	static PriorityQueue<SearchNode> open = new PriorityQueue<SearchNode>();
 	static List<SearchNode> closed = new ArrayList<SearchNode>();
+	static int countOpen = 0;
 	
 	
 	public SearchNode Search(List<Elevator> allElevators, List<Request> allRequests) {
 		
-		// creates first node
+		// creates first node and adds it to open list
 		SearchNode firstNode = createFirstNode(allElevators, allRequests);
 		open.add(firstNode);
 		
 		SearchNode currentNode;
 	
+		int countLoops = 0;
+		int countChildren = 0;
+		
 		while(true) {
+			countLoops += 1;
 			currentNode = open.poll();
 			if (currentNode.allRequests.isEmpty()) break;
 			
@@ -97,9 +103,13 @@ public class AStarSearch {
 				for (Elevator currentElevator : currentNode.allElevators) {
 						temp = new SearchNode(currentNode, currentElevator, currentRequest);
 						openUpdate(currentNode, temp);
+						countChildren += 1;
 				}
 			}
 		}
+		System.out.println(countLoops + " iterations through the while loop.");
+		System.out.println(countChildren + " children nodes created.");
+		System.out.println(countOpen + " children added to OPEN list.");
 		return currentNode;
 	}
 	
