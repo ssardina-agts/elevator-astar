@@ -21,8 +21,8 @@ public class SearchNode implements Comparable<SearchNode> {
 	// sending order that created the current state/ search node
 	SendingOrder order;
 	
-	int hCost;
-	int[] accGCost;
+	int hCost;	// heuristic cost of a the node
+	int[] accGCost;	// g code per elevator
 	int finalCost;
 	
 	public SearchNode(List<Elevator> allElevators, List<Request> allRequests) {
@@ -33,20 +33,24 @@ public class SearchNode implements Comparable<SearchNode> {
 	
 	public SearchNode(SearchNode parent, Elevator currentElevator, Request currentRequest) {
 		// inheriting values from parent search node
+		// TODO: convert this into just arrays of basic data (ints) - do not use Request or Elevator objects
 		this.allRequests = new ArrayList<Request>(parent.allRequests);
 		this.allElevators = new ArrayList<Elevator>(parent.allElevators);
 		this.parent = parent;
 		
 		this.order = new SendingOrder(currentElevator.number, currentElevator.floor, currentRequest.floor);
 		
-		this.accGCost = parent.accGCost.clone();
-		this.hCost = calcH(this.allElevators, this.allRequests);
 
-		
-		// now updating the values
-		this.allRequests.remove(currentRequest);
+		// Now updating the domain features of the node
+		this.accGCost = parent.accGCost.clone();
 		this.accGCost[currentElevator.number-1] += Math.abs(currentElevator.floor - currentRequest.floor);
+
 		this.allElevators.get(currentElevator.number-1).floor = currentRequest.floor;
+		this.allRequests.remove(currentRequest);
+		
+		
+		// Calculate costs and heuristics for node
+		this.hCost = calcH(this.allElevators, this.allRequests);
 		this.finalCost = IntStream.of(accGCost).sum() + hCost;
 	}
 	

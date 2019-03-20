@@ -94,8 +94,8 @@ public class Test {
 		
 		// let A* run
 		AStarSearch testSearch = new AStarSearch();
-		System.out.println("Done with search.");
 		SearchNode lastNode = testSearch.Search(allElevators, allRequests);
+		System.out.println("Done with search.");
 		//System.out.println("Last node: " + lastNode.print());
 		//System.out.println("Last node's parent: " + lastNode.parent.print());
 		

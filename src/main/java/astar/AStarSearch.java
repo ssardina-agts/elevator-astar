@@ -17,6 +17,7 @@ public class AStarSearch {
 	static void openUpdate(SearchNode current, SearchNode next) {
 		if (next == null || closed.contains(next)) return;
 
+		// TODO: will this ever happen? and if it happens, then one should update the f value (because g may be lower)		
 		boolean inOpen = open.contains(next);
 		if (!inOpen) {
 			next.parent = current;
@@ -68,7 +69,10 @@ public class AStarSearch {
 	static SearchNode createFirstNode(List<Elevator> allElevators, List<Request> allRequests) {
 		
 		SearchNode firstNode = new SearchNode(allElevators, allRequests);
+		
+		//	TODO: initiatlize this array with all zeros
 		firstNode.accGCost = new int[allElevators.size()];
+		
 		firstNode.finalCost = firstNode.hCost;
 		
 		return firstNode;
