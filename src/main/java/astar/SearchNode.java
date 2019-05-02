@@ -1,7 +1,6 @@
 package astar;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.*;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 /*
  * SearchNode class used for the A* algorithm containing information about
@@ -13,66 +12,64 @@ import java.util.stream.*;
  */
 public class SearchNode implements Comparable<SearchNode> {
 
-	// state of the search node
-	List<Elevator> allElevators;
-	List<Request> allRequests;
-	
 	SearchNode parent = null;
-	// sending order that created the current state/ search node
-	SendingOrder order;
 	
-	int hCost;	// heuristic cost of a the node
-	int[] accGCost;	// g code per elevator
+	// State of the search node
+	int[] allElevators;
+	int[] allRequests;
+	
+	// Cost of the search note
+	int hCost;
+	int gCost;
 	int finalCost;
 	
-	public SearchNode(List<Elevator> allElevators, List<Request> allRequests) {
-		this.allElevators = new ArrayList<Elevator>(allElevators);
-		this.allRequests = new ArrayList<Request>(allRequests);
+	// TODO: do I need the following infos to be part of the class?
+	// Elevator information
+	int currentElevator;
+	String[] currentElevatorDir;
+	
+	// Request information
+	int currentRequest;
+	String[] currentRequestDir;
+	int call;
+	
+	// constructor for the first search node
+	public SearchNode(int[] allElevators, int[] allRequests) {
+		this.allElevators = allElevators.clone();
+		this.allRequests = allRequests.clone();
 		this.hCost = calcH(allElevators, allRequests);
 	}
 	
-	public SearchNode(SearchNode parent, Elevator currentElevator, Request currentRequest) {
+	//
+	public SearchNode(SearchNode parent, int currentElevator, int currentRequest) {
 		// inheriting values from parent search node
-		// TODO: convert this into just arrays of basic data (ints) - do not use Request or Elevator objects
-		this.allRequests = new ArrayList<Request>(parent.allRequests);
-		this.allElevators = new ArrayList<Elevator>(parent.allElevators);
 		this.parent = parent;
+		this.allRequests = parent.allRequests.clone();
+		this.allElevators = parent.allElevators.clone();
+		this.currentElevator = currentElevator;
+		this.currentRequest = currentRequest;
+		this.call = this.allRequests[currentRequest];
 		
-		this.order = new SendingOrder(currentElevator.number, currentElevator.floor, currentRequest.floor);
-		
-
-		// Now updating the domain features of the node
-		this.accGCost = parent.accGCost.clone();
-		this.accGCost[currentElevator.number-1] += Math.abs(currentElevator.floor - currentRequest.floor);
-
-		this.allElevators.get(currentElevator.number-1).floor = currentRequest.floor;
-		this.allRequests.remove(currentRequest);
-		
-		
-		// Calculate costs and heuristics for node
+		this.gCost = parent.gCost;
 		this.hCost = calcH(this.allElevators, this.allRequests);
-		this.finalCost = IntStream.of(accGCost).sum() + hCost;
+		
+		// now updating the values
+		this.gCost += Math.abs(this.allElevators[this.currentElevator] - this.allRequests[this.currentRequest]);
+		this.allElevators[this.currentElevator] = this.allRequests[this.currentRequest];
+		
+		this.allRequests = ArrayUtils.remove(this.allRequests, this.currentRequest);
+		this.finalCost = this.gCost + this.hCost;
 	}
 	
 	// calculates the heuristic costs for request/elevator
-	static int calcH(List<Elevator> allElevators, List<Request> allRequests) {
+	static int calcH(int[] allElevators, int[] allRequests) {
 		int hCost = 0;
-
-		List<Integer> elevatorFloors = new ArrayList<Integer>();
-		for(Elevator e : allElevators) {
-			elevatorFloors.add(e.floor);
-		}
 		
-		List<Integer> requestFloors = new ArrayList<Integer>();
-		for (Request r : allRequests) {
-			requestFloors.add(r.floor);
-		}
-		
-		for (Integer r : requestFloors) {
+		for (int i = 0; i < allRequests.length; i++) {
 			int diff = 1000000;
-			for (Integer e : elevatorFloors) {
-				if (Math.abs(r-e) < diff) {
-					diff = Math.abs(r-e);
+			for (int j = 0; j < allElevators.length; j++) {
+				if (Math.abs(allRequests[i] - allElevators[j]) < diff) {
+					diff = Math.abs(allRequests[i] - allElevators[j]);
 				}
 			}
 			hCost += diff;
@@ -80,21 +77,10 @@ public class SearchNode implements Comparable<SearchNode> {
 		return hCost;
 	}
 	
-	public String print() {
-		return order.print() +" - finalCost: "+ Integer.toString(finalCost);
-	}
-	
-	public List<String> printState() {
-		List<String> state = new ArrayList<String>();
-		for (Request r : this.allRequests) {
-			state.add(r.print());
-		}
-		
-		for (Elevator e : this.allElevators) {
-			state.add(e.print());
-		}
-		
-		return state;
+	@Override
+	public String toString() {
+		String text = String.format("Elevator %d from %d to %d (cost: %d)", this.currentElevator+1, this.allElevators[this.currentElevator], this.call, this.finalCost);
+		return text;
 	}
 	
 	@Override

@@ -1,94 +1,76 @@
 package astar;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-
-import astar.Elevator;
-import astar.Request;
 import astar.AStarSearch;
 
 
 public class Test {
-	// change for the test
 	// function to create test values for the elevators
-	private static List<Elevator> createElevators(int numElevators, int numFloors) {
+	private static int[] createElevators(int numElevators, int numFloors) {
 		Random rnd = new Random();
-		List<Elevator> allElevators = new ArrayList<Elevator>(); 
+		int[] allElevators = new int[numElevators];
 		
 		// create List with elevator information
 		for(int i = 0; i < numElevators; i++) {
-			int currentFloor = rnd.nextInt(numFloors)+1;
-			Elevator singleElevator = new Elevator(currentFloor, "none");
-			singleElevator.number = i+1;
-			allElevators.add(singleElevator);
+			allElevators[i] = rnd.nextInt(numFloors)+1;
 		}
 		
 		return allElevators;
 	}
-		
+	
 	// function to create test values for the requests
-	private static List<Request> createRequests(int numRequests, int numFloors) {
+	private static int[] createRequests(int numRequests, int numFloors) {
 		Random rnd = new Random();
-		String dir;
-		List<Request> allRequests = new ArrayList<Request>();
+		int[] allRequests = new int[numRequests];
 		
-		// create List with number of requests
+		// create array with number of requests
 		for(int i = 0; i < numRequests; i++) {
-			int floor = rnd.nextInt(numFloors)+1;
-			int rndDir = rnd.nextInt(2);
-			if(rndDir == 0) {dir = "UP";}
-			else {dir = "DOWN";}
-			
-			Request singleRequest = new Request(floor, dir);
-			allRequests.add(singleRequest);
+			allRequests[i] = rnd.nextInt(numFloors)+1;
 		}
 		return allRequests;
 	}
 	
-	static int calcH(List<Elevator> allElevators, List<Request> allRequests) {
-		int hCost = 0;
-
-		List<Integer> elevatorFloors = new ArrayList<Integer>();
-		for(Elevator e : allElevators) {
-			elevatorFloors.add(e.floor);
-		}
-		
-		List<Integer> requestFloors = new ArrayList<Integer>();
-		for (Request r : allRequests) {
-			requestFloors.add(r.floor);
-		}
-		
-		for (Integer r : requestFloors) {
-			int diff = 1000000;
-			for (Integer e : elevatorFloors) {
-				if (Math.abs(r-e) < diff) {
-					diff = Math.abs(r-e);
-				}
-			}
-			hCost += diff;
-		}
-		return hCost;
-	}
-
+//	private static String[] createRDirs(int numRequests) {
+//		String RDirs[] = new String[numRequests];
+//		Random rnd = new Random();
+//		for(int i = 0; i < numRequests; i++) {
+//			int rndDir = rnd.nextInt(2);
+//			if(rndDir == 0) {RDirs[i] = "UP";}
+//			else {RDirs[i] = "DOWN";}
+//		}
+//		return RDirs;
+//	}
+//	
+//	private static String[] createEDirs(int numElevators) {
+//		String EDirs[] = new String[numElevators];
+//		Random rnd = new Random();
+//		
+//		for(int i = 0; i < numElevators; i++) {
+//			EDirs[i] = "none";
+//		}
+//		
+//		return EDirs;
+//	}
 
 	public static void main(String[] args) {
 		int numElevators = 2;
-		int numFloors = 20;
+		int numFloors = 30;
 		int numRequests = 5;
 		
 		// create data for test case
-		List<Elevator> allElevators = createElevators(numElevators, numFloors);
-		List<Request> allRequests = createRequests(numRequests, numFloors);
+		int[] allElevators = createElevators(numElevators, numFloors);
+		int[] allRequests = createRequests(numRequests, numFloors);
 		
 		// print information about pending requests and available elevators for our test case
 		System.out.println("###############################");
-		for (Request r : allRequests) {
-			System.out.println("Floor: " + r.floor + " Direction: " + r.dir);
+		for (int r : allRequests) {
+			System.out.println("Floor: " + r);
 		}
+
 		System.out.println();
-		for (Elevator e : allElevators) {
-			System.out.println("Elevator #" + e.number + " in floor " + e.floor);
+		
+		for (int i=0; i < allElevators.length; i++) {
+			System.out.println("Elevator #" + (i+1) + " in floor " + allElevators[i]);
 		}
 		System.out.println("###############################");
 		

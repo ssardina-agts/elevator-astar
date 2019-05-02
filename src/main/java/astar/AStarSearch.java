@@ -5,6 +5,8 @@ import java.util.List;
 //import java.util.Iterator;
 import java.util.PriorityQueue;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 
 
 /*
@@ -14,65 +16,50 @@ import java.util.PriorityQueue;
  */
 public class AStarSearch {
 	
-	static void openUpdate(SearchNode current, SearchNode next) {
-		if (next == null || closed.contains(next)) return;
-
-		// TODO: will this ever happen? and if it happens, then one should update the f value (because g may be lower)		
-		boolean inOpen = open.contains(next);
-		if (!inOpen) {
-			next.parent = current;
-			open.add(next);
-			countOpen += 1;
-		}
-	}
-	
-	
-	// picks the closest elevator to the request-floor
-	static Elevator closestElevator(Request request, List<Elevator> elevators) {
-		// sorting the list of elevator according to their current position makes the search faster
-		elevators.sort((Elevator one, Elevator two) -> {
-			if (one.floor > two.floor)
-				return 1;
-			if (one.floor < two.floor)
-				return -1;
-			return 0;
-		});
-		
-		// finding the closest elevator to request
-		if (request.floor < elevators.get(0).floor) {
-			return elevators.get(0);
-		}
-		if (request.floor > elevators.get(-1).floor) {
-			return elevators.get(-1);
-		}
-		
-		int low = 0;
-		int high = elevators.size() - 1;
-		
-		while (low <= high) {
-			int mid = (low + high) / 2;
-			
-			if (request.floor < mid) {
-				high = mid - 1;
-			} else if (request.floor > mid) {
-				low = mid + 1;
-			} else {
-				return elevators.get(mid);
-			}
-		}
-		
-		return (elevators.get(low).floor - request.floor) < (request.floor - elevators.get(high).floor) ? elevators.get(low) : elevators.get(high);
-	}
+//	// picks the closest elevator to the request-floor
+//	static Elevator closestElevator(Request request, List<Elevator> elevators) {
+//		// sorting the list of elevator according to their current position makes the search faster
+//		elevators.sort((Elevator one, Elevator two) -> {
+//			if (one.floor > two.floor)
+//				return 1;
+//			if (one.floor < two.floor)
+//				return -1;
+//			return 0;
+//		});
+//		
+//		// finding the closest elevator to request
+//		if (request.floor < elevators.get(0).floor) {
+//			return elevators.get(0);
+//		}
+//		if (request.floor > elevators.get(-1).floor) {
+//			return elevators.get(-1);
+//		}
+//		
+//		int low = 0;
+//		int high = elevators.size() - 1;
+//		
+//		while (low <= high) {
+//			int mid = (low + high) / 2;
+//			
+//			if (request.floor < mid) {
+//				high = mid - 1;
+//			} else if (request.floor > mid) {
+//				low = mid + 1;
+//			} else {
+//				return elevators.get(mid);
+//			}
+//		}
+//		
+//		return (elevators.get(low).floor - request.floor) < (request.floor - elevators.get(high).floor) ? elevators.get(low) : elevators.get(high);
+//	}
 	
 	
 	// creates the first node for the search algorithm with the first array of accumulated g-costs, no order, no parent
-	static SearchNode createFirstNode(List<Elevator> allElevators, List<Request> allRequests) {
+	static SearchNode createFirstNode(int[] allElevators, int[] allRequests) {
 		
 		SearchNode firstNode = new SearchNode(allElevators, allRequests);
 		
-		//	TODO: initiatlize this array with all zeros
-		firstNode.accGCost = new int[allElevators.size()];
-		
+		firstNode.gCost = 0;
 		firstNode.finalCost = firstNode.hCost;
 		
 		return firstNode;
@@ -84,7 +71,7 @@ public class AStarSearch {
 	static int countOpen = 0;
 	
 	
-	public SearchNode Search(List<Elevator> allElevators, List<Request> allRequests) {
+	public SearchNode Search(int[] allElevators, int[] allRequests) {
 		
 		// creates first node and adds it to open list
 		SearchNode firstNode = createFirstNode(allElevators, allRequests);
@@ -98,15 +85,21 @@ public class AStarSearch {
 		while(true) {
 			countLoops += 1;
 			currentNode = open.poll();
-			if (currentNode.allRequests.isEmpty()) break;
+			if (ArrayUtils.isEmpty(currentNode.allRequests)) break;
 			
 			closed.add(currentNode);
 			SearchNode temp;
 			
-			for (Request currentRequest : currentNode.allRequests) {
-				for (Elevator currentElevator : currentNode.allElevators) {
+			for (int i = 0; i <= currentNode.allRequests.length-1; i++) {
+				for (int j = 0; j <= currentNode.allElevators.length-1; j++) {
+						int currentRequest = i;
+						int currentElevator = j;
 						temp = new SearchNode(currentNode, currentElevator, currentRequest);
-						openUpdate(currentNode, temp);
+						if (!open.contains(temp)) {
+							//temp.parent = currentNode; //not necessary
+							open.add(temp);
+							countOpen += 1;
+						}
 						countChildren += 1;
 				}
 			}
@@ -122,7 +115,7 @@ public class AStarSearch {
 		List<SearchNode> path = new ArrayList<SearchNode>();
 		
 		while (lastNode.parent != null) {
-			System.out.println(lastNode.print());
+			System.out.println(lastNode);
 			path.add(lastNode);
 			lastNode = lastNode.parent;
 		}
