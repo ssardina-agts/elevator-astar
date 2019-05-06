@@ -58,7 +58,6 @@ public class AStarSearch {
 	static SearchNode createFirstNode(int[] allElevators, int[] allRequests) {
 		
 		SearchNode firstNode = new SearchNode(allElevators, allRequests);
-		
 		firstNode.gCost = 0;
 		firstNode.finalCost = firstNode.hCost;
 		

@@ -24,6 +24,7 @@ public class Test {
 		int[] allRequests = new int[numRequests];
 		
 		// create array with number of requests
+		// TODO: no double floors
 		for(int i = 0; i < numRequests; i++) {
 			allRequests[i] = rnd.nextInt(numFloors)+1;
 		}
@@ -53,13 +54,16 @@ public class Test {
 //	}
 
 	public static void main(String[] args) {
-		int numElevators = 2;
-		int numFloors = 30;
-		int numRequests = 5;
+		//int numElevators = 2;
+		//int numFloors = 30;
+		//int numRequests = 5;
 		
 		// create data for test case
-		int[] allElevators = createElevators(numElevators, numFloors);
-		int[] allRequests = createRequests(numRequests, numFloors);
+		//int[] allElevators = createElevators(numElevators, numFloors);
+		//int[] allRequests = createRequests(numRequests, numFloors);
+		int[] allRequests = {5, 20, 16, 7, 30};
+		int[] allElevators = {3, 15};
+		
 		
 		// print information about pending requests and available elevators for our test case
 		System.out.println("###############################");

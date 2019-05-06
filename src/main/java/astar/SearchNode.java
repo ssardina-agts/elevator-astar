@@ -1,5 +1,7 @@
 package astar;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 /*
@@ -27,11 +29,12 @@ public class SearchNode implements Comparable<SearchNode> {
 	// Elevator information
 	int currentElevator;
 	String[] currentElevatorDir;
+	int printE;
 	
 	// Request information
 	int currentRequest;
 	String[] currentRequestDir;
-	int call;
+	int printR;
 	
 	// constructor for the first search node
 	public SearchNode(int[] allElevators, int[] allRequests) {
@@ -48,16 +51,22 @@ public class SearchNode implements Comparable<SearchNode> {
 		this.allElevators = parent.allElevators.clone();
 		this.currentElevator = currentElevator;
 		this.currentRequest = currentRequest;
-		this.call = this.allRequests[currentRequest];
+		this.printR = this.allRequests[currentRequest];
+		this.printE = this.allElevators[currentElevator];
+
+//		System.err.println("Request " + this.currentRequest + " from floor " + this.allRequests[this.currentRequest] + " Elevator " + this.currentElevator + " " + Arrays.toString(this.allElevators));
 		
-		this.gCost = parent.gCost;
-		this.hCost = calcH(this.allElevators, this.allRequests);
+		this.gCost = parent.gCost; //works
+		this.hCost = calcH(this.allElevators, this.allRequests); //prob works
 		
 		// now updating the values
-		this.gCost += Math.abs(this.allElevators[this.currentElevator] - this.allRequests[this.currentRequest]);
-		this.allElevators[this.currentElevator] = this.allRequests[this.currentRequest];
+		this.gCost += Math.abs(this.allElevators[this.currentElevator] - this.allRequests[this.currentRequest]); //works
+		this.allElevators[this.currentElevator] = this.allRequests[this.currentRequest]; //works
 		
-		this.allRequests = ArrayUtils.remove(this.allRequests, this.currentRequest);
+//		System.err.println("Request " + this.currentRequest + " from floor " + this.allRequests[this.currentRequest] + " Elevator " + this.currentElevator + " " + Arrays.toString(this.allElevators));
+		
+		
+		this.allRequests = ArrayUtils.remove(this.allRequests, this.currentRequest); //works
 		this.finalCost = this.gCost + this.hCost;
 	}
 	
@@ -79,7 +88,7 @@ public class SearchNode implements Comparable<SearchNode> {
 	
 	@Override
 	public String toString() {
-		String text = String.format("Elevator %d from %d to %d (cost: %d)", this.currentElevator+1, this.allElevators[this.currentElevator], this.call, this.finalCost);
+		String text = String.format("Elevator %d from %d to %d (finalCost: %d)", this.currentElevator+1, this.printE, this.printR, this.finalCost);
 		return text;
 	}
 	
