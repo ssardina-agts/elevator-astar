@@ -1,6 +1,7 @@
 package astar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -27,11 +28,10 @@ public class AStarSearch {
 	
 	
 	// Open and closed list for the A* algorithm
-	// open: Priority queue with all requests sorted after f(request)=g(request)+h(request)
+	// open: Priority queue with all requests sorted after f(request) = g(request) + h(request)
 	// closed: List of evaluated nodes
 	static PriorityQueue<SearchNode> open = new PriorityQueue<SearchNode>();
 	static List<SearchNode> closed = new ArrayList<SearchNode>();
-	static int countOpen = 0;
 	
 	
 	public SearchNode Search(int[] allElevators, int[] allRequests) {
@@ -54,7 +54,6 @@ public class AStarSearch {
 						temp = new SearchNode(currentNode, j, i);
 						if (!open.contains(temp)) {
 							open.add(temp);
-							countOpen += 1;
 						}
 				}
 			}
@@ -72,6 +71,8 @@ public class AStarSearch {
 			path.add(lastNode);
 			lastNode = lastNode.parent;
 		}
+		
+		Collections.reverse(path);
 		return path;
 	}
 	

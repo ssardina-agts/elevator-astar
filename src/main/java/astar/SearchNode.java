@@ -8,14 +8,12 @@ import org.apache.commons.lang3.ArrayUtils;
  * SearchNode class used for the A* algorithm containing information about
  * allElevators: integer array with the positions of all elevators
  * allRequests: integer array with the positions of the requests
- * parent: previous SearchNode
+ * parent: previous SearchNode representing the state
  * hCost: heuristic cost of the current search node
  * gCost: actual cost for the current search node so far
  * finalCost: sum of hCost and gCost
  * currentElevator: index of the current elevator
- * printPreviousE: variable for printing the 
- * currentRequest:
- * printPreviousR: 
+ * currentRequest: index of the current request
  */
 public class SearchNode implements Comparable<SearchNode> {
 
@@ -32,11 +30,9 @@ public class SearchNode implements Comparable<SearchNode> {
 	
 	// Elevator information
 	int currentElevator;
-	int printPreviousE;
 	
 	// Request information
 	int currentRequest;
-	int printPreviousR;
 	
 	// Constructor for the first search node
 	public SearchNode(int[] allElevators, int[] allRequests) {
@@ -52,8 +48,6 @@ public class SearchNode implements Comparable<SearchNode> {
 		this.allElevators = parent.allElevators.clone();
 		this.currentElevator = currentElevator;
 		this.currentRequest = currentRequest;
-		this.printPreviousR = this.allRequests[currentRequest];
-		this.printPreviousE = this.allElevators[currentElevator];
 		
 		this.gCost = parent.gCost;
 		this.hCost = calcH(this.allElevators, this.allRequests);

@@ -1,7 +1,6 @@
 package astar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -69,7 +68,7 @@ public class Test {
 		// make and print path
 		List<SearchNode> path = new ArrayList<SearchNode>();
 		path = testSearch.makePath(lastNode);
-		Collections.reverse(path);
+		
 		for (SearchNode p : path) {
 			System.out.println(p);
 		}
