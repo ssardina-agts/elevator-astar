@@ -1,5 +1,9 @@
 package astar;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import astar.AStarSearch;
 
@@ -22,48 +26,27 @@ public class Test {
 	private static int[] createRequests(int numRequests, int numFloors) {
 		Random rnd = new Random();
 		int[] allRequests = new int[numRequests];
+		int[] allFloors = new int[numFloors+1];
+		
+		for(int i = 0; i <= numFloors; i++) {
+			allFloors[i] = i;
+		}
 		
 		// create array with number of requests
-		// TODO: no double floors
 		for(int i = 0; i < numRequests; i++) {
-			allRequests[i] = rnd.nextInt(numFloors)+1;
+			allRequests[i] = allFloors[rnd.nextInt(allFloors.length)];
 		}
 		return allRequests;
 	}
-	
-//	private static String[] createRDirs(int numRequests) {
-//		String RDirs[] = new String[numRequests];
-//		Random rnd = new Random();
-//		for(int i = 0; i < numRequests; i++) {
-//			int rndDir = rnd.nextInt(2);
-//			if(rndDir == 0) {RDirs[i] = "UP";}
-//			else {RDirs[i] = "DOWN";}
-//		}
-//		return RDirs;
-//	}
-//	
-//	private static String[] createEDirs(int numElevators) {
-//		String EDirs[] = new String[numElevators];
-//		Random rnd = new Random();
-//		
-//		for(int i = 0; i < numElevators; i++) {
-//			EDirs[i] = "none";
-//		}
-//		
-//		return EDirs;
-//	}
 
 	public static void main(String[] args) {
-		//int numElevators = 2;
-		//int numFloors = 30;
-		//int numRequests = 5;
+		int numElevators = 2;
+		int numFloors = 30;
+		int numRequests = 5;
 		
 		// create data for test case
-		//int[] allElevators = createElevators(numElevators, numFloors);
-		//int[] allRequests = createRequests(numRequests, numFloors);
-		int[] allRequests = {5, 20, 16, 7, 30};
-		int[] allElevators = {3, 15};
-		
+		int[] allElevators = createElevators(numElevators, numFloors);
+		int[] allRequests = createRequests(numRequests, numFloors);
 		
 		// print information about pending requests and available elevators for our test case
 		System.out.println("###############################");
@@ -82,17 +65,15 @@ public class Test {
 		AStarSearch testSearch = new AStarSearch();
 		SearchNode lastNode = testSearch.Search(allElevators, allRequests);
 		System.out.println("Done with search.");
-		//System.out.println("Last node: " + lastNode.print());
-		//System.out.println("Last node's parent: " + lastNode.parent.print());
-		
 		
 		// make and print path
-		testSearch.makePath(lastNode);
+		List<SearchNode> path = new ArrayList<SearchNode>();
+		path = testSearch.makePath(lastNode);
+		Collections.reverse(path);
+		for (SearchNode p : path) {
+			System.out.println(p);
+		}
 		System.out.println("Path done.");
 		
-		
-		
-		
-
 	}
 }
