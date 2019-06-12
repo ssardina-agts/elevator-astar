@@ -8,17 +8,6 @@ import astar.AStarSearch;
 
 
 public class Test {
-	
-	int numElevators;
-	int numFloors;
-	int numRequests;
-	
-	public Test(int numElevators, int numFloors, int numRequests){
-		this.numElevators = numElevators;
-		this.numFloors = numFloors;
-		this.numRequests = numRequests;
-	}
-	
 	// function to create test values for the elevators
 	private static int[] createElevators(int numElevators, int numFloors) {
 		Random rnd = new Random();
@@ -50,12 +39,13 @@ public class Test {
 	}
 
 	public static void main(String[] args) {
-		
-		Test newTest = new Test(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+		int numElevators = 2;
+		int numFloors = 30;
+		int numRequests = 5;
 		
 		// create data for test case
-		int[] allElevators = createElevators(newTest.numElevators, newTest.numFloors);
-		int[] allRequests = createRequests(newTest.numRequests, newTest.numFloors);
+		int[] allElevators = createElevators(numElevators, numFloors);
+		int[] allRequests = createRequests(numRequests, numFloors);
 		
 		// print information about pending requests and available elevators for our test case
 		System.out.println("###############################");
