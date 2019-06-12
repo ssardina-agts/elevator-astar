@@ -1,105 +1,90 @@
-# SARL Elevator Simulator Controllers - BASE (for Java-based Elevator Simulator) #
+# ASTAR for Elevator Control 
 
-This project provides a base to build [SARL](http://www.sarl.io/)-based controllers for the [Java Elevator Simulator (RMIT Version)](https://bitbucket.org/ssardina-research/elevator-sim).
-
-The project relies on:
-
-1. The [SARL Elevator Simulator Middleware](https://bitbucket.org/ssardina-research/sarl-elevatorsim-mw) to connect to and communicate with the elevator simulator via appropriate capacities/skills.
-2. The [SARL-PROLOG-CAP](https://bitbucket.org/ssardina-research/sarl-prolog-cap) project that provides a capacity and a skill for SARL agents to use [SWI Prolog](http://www.swi-prolog.org/) for implementing the knowledge base of the agents. 
-	* This in turn relies on [SWI Prolog](http://swi-prolog.org) and the bidirectoinal Java-SWI [JPL framework](https://jpl7.org) 
-
-Two dummy controllers, one of them using SWI Prolog, are provided.
-
-**IMPORTANT:** General support documentation relevant to this project are:
-
-* Instructions how to run SARL systems [here](https://bitbucket.org/snippets/ssardina/6eybMg/sarl-application-general-information-setup)
-* FAQ for SARL+SWI+Maven [here](https://bitbucket.org/snippets/ssardina/9er67X).
+This is a controller for a multi-car elevator controller using A* search. It was done by Vanessa Toborek (vanessatoborek@icloud.com) under the supervisin of Sebastian Sardina during her visit to RMIT University as part of her Master program.
 
 
-## PRE-REQUISITES
+The project consists of the Java implementation of the A* algorithm in order to distribute an arbitrary number of requests to the available elevators in a way that minimizes the overall waiting time of passengers. 
 
-* Java Runtime Environment (JRE) and Java Compiler (javac) v1.8 (use Sun version)
-* Maven project management and comprehension tool (to meet dependencies, compile, package, run).
-* [The Elevator Simulator Server (RMIT version)](https://bitbucket.org/ssardina-research/elevator-sim).
-	* A complete JAR file can be obtained in the [Download](https://bitbucket.org/ssardina-research/elevator-sim/downloads/) section.
-* [SARL modules and execution engine](http://mvnrepository.com/artifact/io.sarl.maven). Last SARL version tested 0.8.6.
-	* Requires environment variable `SARL_VERSION` set to the SARL version used, e.g., `export SARL_VERSION=0.8.6` in Linux and `set SARL_VERSION 0.8.6` in Windows.
-		* In Linux/Mac, to make ECLIPSE see this environment variable, you may need to start it from CLI after the export statement (`./eclipse-sarl` in Linux or `open /Applications/eclipse`). 
-		* In Windows, if `SARL_VERSION` is defined globally, then ECLIPSE will use it well.
-* [SARL Elevator Simulator Middleware](https://bitbucket.org/ssardina-research/sarl-elevatorsim-mw): this provides the SARL capacity and skills to talk to the elevator simulator. 
-	* Refer to the [MW capacities](https://bitbucket.org/ssardina-research/sarl-elevatorsim-mw/src/master/src/main/sarl/au/edu/rmit/agtgrp/elevatorsim/sarlmw/capacities/?at=master) to understand what is provided to connect your agents to the simulator and interact with it.
-	* It should be obtained automatically as a Maven dependency via [JitPack](https://jitpack.io/#org.bitbucket.ssardina-research/sarl-elevatorsim-mw). 
-* The [SARL-PROLOG-CAP](https://bitbucket.org/ssardina-research/sarl-prolog-cap) capacity+skill for [SWI Prolog](http://www.swi-prolog.org/) system:
-	* Capacity (and skill) to allow SARL agents to have Prolog knowledge-bases. Refer to instructions and examples there.
-	* Relies on [JPL](https://jpl7.org/) for the  implementation to have [SWI Prolog](http://www.swi-prolog.org/) access in agents.
-	* The right version (specified in the POM file) should be obtained automatically via [JitPack](http://jitpack.io):
-		* From Bitbucket repo (less reliable): [JitPack](https://jitpack.io/#org.bitbucket.ssardina-research/sarl-prolog-cap).
-		* From Github clone (more reliable): [JitPack](https://jitpack.io/#ssardina-sarl/sarl-prolog-cap)
+## Compile & Run
 
-## DESCRIPTION OF DUMMY AGENTS
+The implementation uses Apache Commons Lang utility classes (`org.apache.commons.lang3`). In Ubuntu-type Linux it is provided by package `libcommons-lang3-java`.
 
-Both dummy controllers implement centralized (i.e., one agent controls all elevator cars) control of all cars. Cars are instructed to indefinitely iterate between the highest and lowest floor. 
-Some information is reported as cars reach their destinations. 
+To compile:
 
-In the SWI Prolog version, a Prolog fact is added to store each car arrival when event `CarArrivedPercept` is received. 
-Also, at every arrival, the Prolog knowledge-base is dumped to the file system as a file (with timestamp).
-
-The SWI Prolog version has two important files:
-
-* The initial SWI knowledgebase that the agent will load: `src/main/sarl/au/edu/rmit/agtgrp/elevatorsim/sarlctrl/beliefs/KB_elevator.pl`
-* A capacity+skill `KB_Elevator` (and a corresponding SWI-type skill) that encapsulates the meaningful Prolog queries for the domain: `src/main/sarl/au/edu/rmit/agtgrp/elevatorsim/sarlctrl/beliefs/KB_Elevator.sarl`
-	* This capacity should be extended as Prolog's is used for the application. 
+    $ javac -cp /usr/share/java/commons-lang3.jar src/astar/*.java
 
 
-## RUNNING THE CONTROLLERS AGAINST THE SIMULATOR
+To run:
 
-To run the controllers provided in this package, follow the following 3 steps.
-
-1. Start the [elevator simulator](https://bitbucket.org/ssardina-research/elevator-sim), either from ECLIPSE (if you have it as a project) or directly with its JAR file
-2. Navigate to *File > New*, choose a simulator scenario from the available list, choose your simulation parameters, and click *Apply*.
-3. Start SARL Controller you want to deploy.
-
-You can run the SARL controller, either from ECLIPSE or from CLI (via Java or Maven), please refer to [this instructions](https://bitbucket.org/snippets/ssardina/6eybMg#markdown-header-4-running-the-sarl-application).
+    $ java -cp src/:/usr/share/java/commons-lang3.jar astar.Test
 
 
-### EXAMPLES
-
-By default Maven produces the JAR file without dependencies as plugin `maven-assembly-plugin` is too slow to compile. 
-So, we can run the system using `exec-maven-plugin` which will run class `BootMAS` automatically and deal with all dependencies:
-
-	mvn exec:java -Dexec.args=DummySWIMultiCarController -Dkb=src/main/sarl/au/edu/rmit/agtgrp/elevatorsim/sarlctrl/beliefs/KB_elevator.pl
-
-If we have built the jar with dependencies (by enabling in `maven-assembly-plugin`), we can do:
-
-	java -Dkb=src/main/sarl/au/edu/rmit/agtgrp/elevatorsim/sarlctrl/beliefs/KB_elevator.pl \
-		-jar target/sarl-elevatorsim-base-1.2.0.7.2-jar-with-dependencies.jar DummySWIMultiCarController
-		
-Remember to set-up your system environment variables depending on your platform (Linux, Windows, etc.) to that SWI can be found.
-See [this entry](https://bitbucket.org/snippets/ssardina/9er67X#markdown-header-what-environment-variables-i-should-care-about-in-linux) in the FAQ.
-This variables can be set in script `set-env-vars.sh` and then exported as `source ./set-env-var.bash`
-
-In Windows, as long as the environment variables have been correctly set up as above, everything should work well.
-
-Check a video how to run the simulator and the agent [here](https://www.youtube.com/watch?v=rl7YRjPi5pc).
-		
-		
-
-## PROJECT CONTRIBUTORS 
-
-* Sebastian Sardina (Project Supervisor, Developer & Contact - ssardina@gmail.com)
-* Matthew McNally (2017 Capstone Project Coordinator and SARL Agent Developer) 
-* Joshua Richards (Java Elevator Sim Server developer)
-* Joshua Beale (SARL Agent Developer)
-* Dylan Rock (Documentation)
+    ###############################
+    Floor: 4
+    Floor: 3
+    Floor: 19
+    Floor: 6
+    Floor: 8
+    
+    Elevator #1 in floor 19
+    Elevator #2 in floor 25
+    ###############################
+    Done with search.
+    Elevator 1 from 19 to 8 (finalCost: 66)
+    Elevator 1 from 8 to 6 (finalCost: 30)
+    Elevator 1 from 6 to 4 (finalCost: 26)
+    Elevator 2 from 25 to 19 (finalCost: 28)
+    Elevator 1 from 4 to 3 (finalCost: 23)
+    Path done.
 
 
-## LICENSE 
 
-This project is using the GPLv3 for open source licensing for information and the license visit GNU website (https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+## Implementation Details
 
-You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## A* Algorithm
+
+The A* algorithm is a famous search algorithm that can be used for graph traversal, finding the best path between nodes. Its main advantage is that it uses a heuristic, that means estimated, cost of finishing its search from the current node additionally to the actual cost of the node. By minimizing the sum of these costs, it can iteratively evaluate each node and figure out the optimal path.
+
+## Code Structure
+
+The Java implementation of the A* algorithm is adapted for the elevator planning problem. It takes an arbitrary number of requests and distributes them optimally to the available elevators. The structure of the implementation consists out of three classes: 
+
+* `SearchNode`
+* `AStarSearch`
+* `Test`
+
+### SearchNode
+
+The `SearchNode` class implements the different states during the A* algorithm. It contains the following variables:
+
+* `allElevators`: integer array with the positions of all elevators
+* `allRequests`: integer array with the positions of the requests
+* `parent`: previous node representing the previous state
+* `hCost`: heuristic cost of the current search node
+* `gCost`: actual cost for the current search node
+* `finalCost`: sum of hCost and gCost 
+* `currentElevator`: index of the current elevator
+* `currentRequest`: index of the current request
+
+The class has two constructors: one `SearchNode(int[] allElevators, int[] allRequests)` for the initialization of the very first node. It sets the overall information about all available elevators and all initially pending requests. The second `SearchNode(SearchNode parent, int currentElevator, int currentRequest)` is used for the initialization of every other node and relies on the informations of the parent node as well as the information about the current elevator and the current processed request.
+
+The function `calcH(int[] allElevators, int[] allRequests)` calculates the heuristic cost of the current state. For that it considers the best possible case in which each pending request can be served by the closest elevator at the same time.
+
+### AStarSearch
+
+The most important variables for the A* algorithm are the following:
+
+* `PriorityQueue<SearchNode> open`: it sorts the different nodes according to their final cost
+* `List<SearchNode> closed`: keeps track of already evaluated nodes
+
+The function `Search(int[] allElevators, int[] allRequests)` performs the search on the given input of requests and elevators. It will return the last node to the solution. 
+
+After the search the function `List<SearchNode> makePath(SearchNode lastNode)` will save the solution consisting of all relevant nodes to a list and return it.
+
+
+
+### Test
+
+The test class can be used to run the A* search on some exemplary test data. The functions `createElevators(int numElevators, int numFloors)` and `createRequests(int numRequests, int numFloors)` are responsible for creating the test data. By changing the values for the variables `numElevators`, `numFloors`, `numRequests` the test data can be adjusted accordingly.
