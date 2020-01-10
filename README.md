@@ -2,8 +2,9 @@
 
 This is a controller for a multi-car elevator controller using A* search. It was done by Vanessa Toborek (vanessatoborek@icloud.com) under the supervisin of Sebastian Sardina during her visit to RMIT University as part of her Master program.
 
-
 The project consists of the Java implementation of the A* algorithm in order to distribute an arbitrary number of requests to the available elevators in a way that minimizes the overall waiting time of passengers. 
+
+**Note:** This version just simulates the elevator, it is not connecting against the [Elevator Simulator](https://github.com/ssardina-agts/elevator-simulator) framework.
 
 ## Compile & Run
 
